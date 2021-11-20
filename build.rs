@@ -13,6 +13,7 @@ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 use std::path::Path;
+use std::process::Command;
 
 use failure::*;
 
@@ -42,6 +43,9 @@ fn protobuf() -> Result<(), Error> {
 
 fn main() {
     protobuf().unwrap();
+    let output = Command::new("git").args(&["rev-parse", "HEAD"]).output().unwrap();
+    let git_hash = String::from_utf8(output.stdout).unwrap();
+    println!("cargo:rustc-env=GIT_HASH={}", git_hash);
 
     // Print a warning when rustc is too old.
     if !version_check::is_min_version("1.48.0").unwrap_or(false) {

@@ -9,6 +9,7 @@ mod store;
 
 #[tokio::main]
 async fn main() {
+    println!("starting crayfish {}", env!("GIT_HASH"));
     let (tx, rx) = mpsc::channel(1);
 
     tokio::task::spawn(service::start_websocket(tx));
