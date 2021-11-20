@@ -57,7 +57,7 @@ pub async fn decrypt_sealed_message(
     let msg = base64::decode(data.message).unwrap();
     let envelope = Envelope::decrypt(&msg, &signaling_key, false)?;
     let content = cipher.open_envelope(envelope).await?.unwrap();
-    println!("content decrypted {:?}", content.body);
+    println!("sealed message content decrypted");
     let content_vec = content.body.into_proto().encode_to_vec();
     let message = base64::encode(&content_vec);
     Ok(DecryptSealedMessageResponse {
