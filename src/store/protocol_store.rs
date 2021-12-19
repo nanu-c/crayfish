@@ -60,7 +60,6 @@ impl ProtocolStore {
             regid,
         })
     }
-
 }
 
 impl Storage {
@@ -76,11 +75,11 @@ impl Storage {
 
     fn identity_path(&self, addr: &ProtocolAddress) -> PathBuf {
         let recipient_id = addr_to_path_component(addr.name());
-        println!("Storage::identity_path", );
+        println!("Storage::identity_path");
         self.path
             .join(".storage")
             .join("identity")
-            .join(format!("remote_{}", recipient_id,))
+            .join(format!("remote_{}", recipient_id))
     }
 
     fn prekey_path(&self, id: u32) -> PathBuf {
@@ -173,7 +172,7 @@ impl protocol::IdentityKeyStore for Storage {
         &self,
         _: Context,
     ) -> Result<IdentityKeyPair, SignalProtocolError> {
-        println!("Storage::get_identity_key_pair", );
+        println!("Storage::get_identity_key_pair");
 
         println!("identity_key_pair");
         let protocol_store = self.protocol_store.read().await;
@@ -239,7 +238,7 @@ impl protocol::IdentityKeyStore for Storage {
         addr: &ProtocolAddress,
         _: Context,
     ) -> Result<Option<IdentityKey>, SignalProtocolError> {
-        println!("Storage::get_identity", );
+        println!("Storage::get_identity");
 
         let _lock = self.protocol_store.read().await;
 
@@ -534,7 +533,7 @@ impl Storage {
         addr: &ProtocolAddress,
     ) -> Result<Option<IdentityKey>, SignalProtocolError> {
         let path = self.identity_path(addr);
-        println!("Storage::read_identity_key_file", );
+        println!("Storage::read_identity_key_file");
         if path.is_file() {
             let buf = load_file(self.keys, path).await.expect("read identity key");
             match buf.len() {

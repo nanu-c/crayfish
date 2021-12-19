@@ -89,13 +89,13 @@ async fn handle_sealed_sender_decrypt(content: &str, queue: Queue) -> Result<Mes
     println!("Handle sealed sender decrypt message");
 
     let (tx, rx) = oneshot::channel();
-    
+
     let nested: NestedRequest<sealedsender::SealedSenderMessage> = serde_json::from_str(content)?;
     let req = Request::DecryptSealedSender(nested.request.message, tx);
     queue.send(req).await?;
     let response_data = rx.await??;
     Ok(NestedResponse::new_msg(
-response_data,
+        response_data,
         CRAYFISH_WEBSOCKET_MESSAGE_SEALED_SENDER_DECRYPT,
     ))
 }
