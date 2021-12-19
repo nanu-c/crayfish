@@ -10,7 +10,6 @@ use libsignal_service::configuration::SignalServers;
 use libsignal_service::prelude::Envelope;
 use libsignal_service::ServiceAddress;
 
-use prost::Message;
 use libsignal_service::prelude::ProtobufMessage;
 // use protocol::envelope::*;
 use serde::{Deserialize, Serialize};
@@ -62,7 +61,7 @@ pub async fn decrypt_sealed_message(
     let content_vec = content.body.into_proto().encode_to_vec();
     let message = base64::encode(&content_vec);
     Ok(DecryptSealedMessageResponse {
-        message: message,
+        message,
         sender_device: content.metadata.sender_device,
         timestamp: content.metadata.timestamp,
         needs_receipt: content.metadata.needs_receipt,
