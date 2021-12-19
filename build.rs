@@ -40,10 +40,12 @@ fn protobuf() -> Result<(), Error> {
     Ok(())
 }
 
-
 fn main() {
     protobuf().unwrap();
-    let output = Command::new("git").args(&["rev-parse", "HEAD"]).output().unwrap();
+    let output = Command::new("git")
+        .args(&["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
     let git_hash = String::from_utf8(output.stdout).unwrap();
     println!("cargo:rustc-env=GIT_HASH={}", git_hash);
 
@@ -55,9 +57,7 @@ fn main() {
                 version
             );
         } else {
-            panic!(
-                "Crayfish requires Rust 1.48.0 or later, but could not determine Rust version.",
-            );
+            panic!("Crayfish requires Rust 1.48.0 or later, but could not determine Rust version.");
         }
     }
     let mer_target_root = "";
@@ -66,6 +66,6 @@ fn main() {
 
     cfg.flag(&format!("--sysroot={}", mer_target_root));
     cfg.flag("-isysroot");
-    cfg.flag(&mer_target_root);
+    cfg.flag(mer_target_root);
     cfg.build("src/main.rs");
 }
