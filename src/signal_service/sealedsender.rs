@@ -4,13 +4,14 @@ use crate::store::Storage;
 use crate::store::StorageLocation;
 extern crate base64;
 
-use libsignal_service::ServiceAddress;
 use libsignal_service::cipher::ServiceCipher;
 use libsignal_service::configuration::ServiceConfiguration;
 use libsignal_service::configuration::SignalServers;
 use libsignal_service::prelude::Envelope;
+use libsignal_service::ServiceAddress;
 
 use prost::Message;
+use libsignal_service::prelude::ProtobufMessage;
 // use protocol::envelope::*;
 use serde::{Deserialize, Serialize};
 
