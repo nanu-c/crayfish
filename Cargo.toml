@@ -1,11 +1,11 @@
 [package]
 name = "crayfish"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 
 [dependencies]
-libsignal-service = { git = "https://github.com/whisperfish/libsignal-service-rs.git", rev = "3424b55" }
-libsignal-service-hyper = { git = "https://github.com/whisperfish/libsignal-service-rs.git", rev = "3424b55" }
+libsignal-service = { git = "https://github.com/whisperfish/libsignal-service-rs.git", rev = "1e065e1" }
+libsignal-service-hyper = { git = "https://github.com/whisperfish/libsignal-service-rs.git", rev = "1e065e1" }
 
 actix-threadpool = "0.3"
 aes = "0.7"

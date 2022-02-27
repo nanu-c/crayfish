@@ -2,8 +2,11 @@ use super::utils::service_with_number;
 use crate::error::Result;
 
 use libsignal_service::provisioning::{
-    generate_registration_id, ConfirmCodeMessage, ConfirmCodeResponse, ProvisioningManager,
+    generate_registration_id, VerifyAccountResponse, ProvisioningManager,
     VerificationCodeResponse,
+};
+use libsignal_service::push_service::{
+        AccountAttributes, DeviceCapabilities
 };
 use phonenumber::PhoneNumber;
 use serde::Deserialize;
@@ -44,19 +47,35 @@ pub async fn register_user(data: Register) -> Result<VerificationCodeResponse> {
     })
 }
 
-pub async fn verify_user(data: ConfirmRegistration) -> Result<ConfirmCodeResponse> {
+pub async fn verify_user(data: ConfirmRegistration) -> Result<VerifyAccountResponse> {
     let registration_id = generate_registration_id(&mut rand::thread_rng());
     let mut push_service = service_with_number(data.number.clone(), data.password.clone());
     let mut provisioning_manager =
         ProvisioningManager::new(&mut push_service, data.number, data.password);
+        let account_attrs = AccountAttributes {
+            signaling_key:  Some(data.signaling_key.to_vec()),
+            registration_id,
+            voice: false,
+            video: false,
+            fetches_messages: true,
+            pin: None,
+            registration_lock: None,
+            unidentified_access_key: None,
+            unrestricted_unidentified_access: false,
+            discoverable_by_phone_number: true,
+            capabilities: DeviceCapabilities {
+                uuid: true,
+                gv2: true,
+                storage: false,
+                gv1_migration: true,
+            },
+        };
 
     Ok(provisioning_manager
         .confirm_verification_code(
             data.confirm_code,
-            ConfirmCodeMessage::new_without_unidentified_access(
-                data.signaling_key.to_vec(),
-                registration_id,
-            ),
+            account_attrs,
+
         )
         .await?)
 }

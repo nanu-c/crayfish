@@ -378,7 +378,7 @@ dependencies = [
 
 [[package]]
 name = "crayfish"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "actix-threadpool",
  "aes",
@@ -1111,7 +1111,7 @@ dependencies = [
 [[package]]
 name = "libsignal-service"
 version = "0.1.0"
-source = "git+https://github.com/whisperfish/libsignal-service-rs.git?rev=3424b55#3424b55d3e64890c48659ee7616942baa64b995b"
+source = "git+https://github.com/whisperfish/libsignal-service-rs.git?rev=1e065e1#1e065e10ad361b065e1388b5c3b239eda5bd0705"
 dependencies = [
  "aes",
  "aes-gcm",
@@ -1144,7 +1144,7 @@ dependencies = [
 [[package]]
 name = "libsignal-service-hyper"
 version = "0.1.0"
-source = "git+https://github.com/whisperfish/libsignal-service-rs.git?rev=3424b55#3424b55d3e64890c48659ee7616942baa64b995b"
+source = "git+https://github.com/whisperfish/libsignal-service-rs.git?rev=1e065e1#1e065e10ad361b065e1388b5c3b239eda5bd0705"
 dependencies = [
  "async-trait",
  "async-tungstenite",
