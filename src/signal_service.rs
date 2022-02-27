@@ -1,11 +1,13 @@
 pub mod registration;
 pub mod requests;
 pub mod sealedsender;
+pub mod avatar;
 mod utils;
 
 use self::{
     registration::{register_user, verify_user},
     sealedsender::decrypt_sealed_message,
+    avatar::decrypt_avatar_message,
 };
 use requests::Request;
 use tokio::sync::mpsc;
@@ -41,6 +43,9 @@ impl SignalServiceWrapper {
             }
             Request::DecryptSealedSender(data, cb) => {
                 let _ = cb.send(decrypt_sealed_message(data).await);
+            }
+            Request::DecryptAvatar(data, cb) => {
+                let _ = cb.send(decrypt_avatar_message(data).await);
             }
         }
     }

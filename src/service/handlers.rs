@@ -1,8 +1,9 @@
 use super::types::*;
 use crate::error::{Error, Result};
 use crate::signal_service::registration::{ConfirmRegistration, Register};
+use crate::signal_service::{avatar};
 use crate::signal_service::requests::Request;
-use crate::signal_service::{sealedsender, Queue};
+use crate::signal_service::{sealedsender,  Queue};
 // , decryptSealedMessage};
 
 use libsignal_service::provisioning::VerificationCodeResponse;
@@ -30,6 +31,9 @@ pub async fn handle_message(msg: Message, queue: Queue) -> Result<Message> {
         }
         CRAYFISH_WEBSOCKET_MESSAGE_SEALED_SENDER_DECRYPT => {
             handle_sealed_sender_decrypt(content, queue).await
+        }
+        CRAYFISH_WEBSOCKET_MESSAGE_AVATAR_DECRYPT => {
+            handle_avatar_decrypt(content, queue).await
         }
         _ => Error::is("Received request type is unknown"),
     };
@@ -97,5 +101,20 @@ async fn handle_sealed_sender_decrypt(content: &str, queue: Queue) -> Result<Mes
     Ok(NestedResponse::new_msg(
         response_data,
         CRAYFISH_WEBSOCKET_MESSAGE_SEALED_SENDER_DECRYPT,
+    ))
+}
+
+async fn handle_avatar_decrypt(content: &str, queue: Queue) -> Result<Message> {
+    println!("Handle avatar decrypt message");
+
+    let (tx, rx) = oneshot::channel();
+
+    let nested: NestedRequest<avatar::AvatarMessage> = serde_json::from_str(content)?;
+    let req = Request::DecryptAvatar(nested.request.message, tx);
+    queue.send(req).await?;
+    let response_data = rx.await??;
+    Ok(NestedResponse::new_msg(
+        response_data,
+        CRAYFISH_WEBSOCKET_MESSAGE_AVATAR_DECRYPT,
     ))
 }
