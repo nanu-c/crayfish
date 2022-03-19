@@ -11,6 +11,7 @@ pub const CRAYFISH_WEBSOCKET_MESSAGE_UNKNOWN: u32 = 0;
 pub const CRAYFISH_WEBSOCKET_MESSAGE_REGISTRATION: u32 = 1;
 pub const CRAYFISH_WEBSOCKET_MESSAGE_CONFIRM_REGISTRAION: u32 = 2;
 pub const CRAYFISH_WEBSOCKET_MESSAGE_SEALED_SENDER_DECRYPT: u32 = 3;
+pub const CRAYFISH_WEBSOCKET_MESSAGE_AVATAR_DECRYPT: u32 = 4;
 
 pub type NestedRequest<T> = RequestMessage<RequestBody<T>>;
 pub type NestedResponse<T> = ResponseMessage<ResponseBody<T>>;
