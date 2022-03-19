@@ -1,5 +1,5 @@
 use crate::error::Result;
-use libsignal_service::attachment_cipher::decrypt_in_place;
+use libsignal_service::attachment_cipher::{decrypt_in_place, AttachmentCipherError};
 
 use serde::{Deserialize, Serialize};
 use serde_big_array::BigArray;
@@ -27,8 +27,20 @@ pub async fn decrypt_avatar_message(
 ) -> Result<DecryptAvatarMessageResponse> {
     println!("decrypt_avatar_message");
     let mut ciphertext = base64::decode(data.avatar).unwrap();
-    decrypt_in_place(data.key,  &mut ciphertext).expect("attachment decryption");
-    Ok(DecryptAvatarMessageResponse {
-        avatar: base64::encode(&ciphertext),
-    })
+
+    let result  = decrypt_in_place(data.key,  &mut ciphertext);
+    match result {
+        Ok(res)=>{
+            Ok(DecryptAvatarMessageResponse {
+                avatar: base64::encode(&ciphertext),
+            })
+        },
+        Err(e)=> {
+            eprint!("error decrypting avatar {}",e );
+            Ok(DecryptAvatarMessageResponse {
+                avatar: "".to_string(),
+            })
+        },    
+    }
+
 }
