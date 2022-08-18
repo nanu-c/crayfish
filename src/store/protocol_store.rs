@@ -409,7 +409,7 @@ impl protocol::SessionStoreExt for Storage {
                 addr.to_string(),
                 e
             );
-            SignalProtocolError::SessionNotFound(addr.to_string())
+            SignalProtocolError::SessionNotFound(*addr)
         })?;
         Ok(())
     }

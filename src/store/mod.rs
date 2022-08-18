@@ -87,12 +87,11 @@ impl ProtocolStore {
         let regid = regid.parse()?;
         let mut buf = load_file(keys, identity_path.join("identity_key")).await?;
         let identity_key_pair = {
-            use std::convert::TryFrom;
             buf.insert(0, 0x05u8);
             // why there is one bit of padding?
-            let public_key = PublicKey::try_from(&buf[0..35])?;
+            let public_key = PublicKey::deserialize(&buf[0..35])?;
             let public = IdentityKey::new(public_key);
-            let private = PrivateKey::try_from(&buf[33..])?;
+            let private = PrivateKey::deserialize(&buf[33..])?;
             IdentityKeyPair::new(public, private)
         };
 
@@ -127,7 +126,7 @@ fn load_file_sync_encrypted(keys: [u8; 16 + 20], path: PathBuf) -> Result<Vec<u8
     let (contents, mac) = contents.split_at_mut(count - 32);
 
     {
-        use hmac::{Hmac, Mac, NewMac};
+        use hmac::{Hmac};
         use sha2::Sha256;
         // Verify HMAC SHA256, 32 last bytes
         let mut verifier = Hmac::<Sha256>::new_from_slice(&keys[16..])
@@ -140,8 +139,7 @@ fn load_file_sync_encrypted(keys: [u8; 16 + 20], path: PathBuf) -> Result<Vec<u8
     }
 
     use aes::Aes128;
-    use block_modes::block_padding::Pkcs7;
-    use block_modes::{BlockMode, Cbc};
+    use block_modes::{block_padding::Pkcs7, BlockMode, Cbc};
     // Decrypt password
     let cipher = Cbc::<Aes128, Pkcs7>::new_from_slices(&keys[0..16], iv)
         .context("CBC initialization error")?;
@@ -224,7 +222,7 @@ fn write_file_sync_encrypted(
     };
 
     let mac = {
-        use hmac::{Hmac, Mac, NewMac};
+        use hmac::{Hmac, Mac};
         use sha2::Sha256;
         // Verify HMAC SHA256, 32 last bytes
         let mut mac = Hmac::<Sha256>::new_from_slice(&keys[16..])

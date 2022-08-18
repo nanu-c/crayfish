@@ -9,14 +9,16 @@ use libsignal_service::configuration::ServiceConfiguration;
 use libsignal_service::configuration::SignalServers;
 use libsignal_service::prelude::Envelope;
 use libsignal_service::ServiceAddress;
+use libsignal_service::content::ContentBody;
+use uuid::Uuid;
 
-use libsignal_service::prelude::ProtobufMessage;
 // use protocol::envelope::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
 pub struct SealedSenderMessage {
-    // pub uuid: String,
+    pub uuid: Option<Uuid>,
+    pub device_id: u32,
     #[serde(with = "serde_str")]
     pub message: String,
 }
@@ -43,14 +45,18 @@ pub async fn decrypt_sealed_message(
     let config = SignalConfig::default();
     let storage = open_storage(&config).await?;
     let signaling_key = storage.signaling_key().await?;
+    let uuid = data.uuid;
+    let device_id = data.device_id;
     println!("signaling_key loaded");
     let mut cipher = ServiceCipher::new(
         storage.clone(),
         storage.clone(),
         storage.clone(),
-        storage.clone(),
+        storage,
         rand::thread_rng(),
-        service_cfg.credentials_validator().expect("trust root"),
+        service_cfg.unidentified_sender_trust_root,
+        uuid.expect("local uuid to initialize service cipher"),
+        device_id,
     );
     println!("cipher created");
     // let msg = data.message.into_bytes();
@@ -58,7 +64,15 @@ pub async fn decrypt_sealed_message(
     let envelope = Envelope::decrypt(&msg, &signaling_key, false)?;
     let content = cipher.open_envelope(envelope).await?.unwrap();
     println!("sealed message content decrypted");
-    let content_vec = content.body.into_proto().encode_to_vec();
+    let mut content_vec;
+    match content.body {
+        ContentBody::DataMessage(m) => {
+            content_vec =  content.body.into_proto().encode_to_vec();
+        }
+        _ => {
+            println!("unexpected content body");
+        }
+    }
     let message = base64::encode(&content_vec);
     Ok(DecryptSealedMessageResponse {
         message,
