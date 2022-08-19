@@ -126,7 +126,7 @@ fn load_file_sync_encrypted(keys: [u8; 16 + 20], path: PathBuf) -> Result<Vec<u8
     let (contents, mac) = contents.split_at_mut(count - 32);
 
     {
-        use hmac::{Hmac};
+        use hmac::{Hmac, Mac, NewMac};
         use sha2::Sha256;
         // Verify HMAC SHA256, 32 last bytes
         let mut verifier = Hmac::<Sha256>::new_from_slice(&keys[16..])
@@ -222,7 +222,7 @@ fn write_file_sync_encrypted(
     };
 
     let mac = {
-        use hmac::{Hmac, Mac};
+        use hmac::{Hmac, Mac, NewMac};
         use sha2::Sha256;
         // Verify HMAC SHA256, 32 last bytes
         let mut mac = Hmac::<Sha256>::new_from_slice(&keys[16..])

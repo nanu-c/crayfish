@@ -399,7 +399,7 @@ dependencies = [
  "sha-1 0.9.8",
  "sha2 0.9.9",
  "tokio",
- "uuid 0.7.4",
+ "uuid",
  "version_check",
  "warp",
 ]
@@ -1055,7 +1055,7 @@ dependencies = [
  "sha2 0.9.9",
  "subtle",
  "thiserror",
- "uuid 0.8.2",
+ "uuid",
  "x25519-dalek",
 ]
 
@@ -1088,7 +1088,7 @@ dependencies = [
  "sha2 0.10.2",
  "thiserror",
  "url",
- "uuid 0.8.2",
+ "uuid",
  "zkgroup",
 ]
 
@@ -2524,15 +2524,6 @@ name = "utf-8"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09cc8ee72d2a9becf2f2febe0205bbed8fc6615b7cb429ad062dc7b7ddd036a9"
-
-[[package]]
-name = "uuid"
-version = "0.7.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90dbc611eb48397705a6b0f6e917da23ae517e4d127123d2cf7674206627d32a"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "uuid"
