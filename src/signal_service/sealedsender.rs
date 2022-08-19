@@ -65,15 +65,7 @@ pub async fn decrypt_sealed_message(
     let envelope = Envelope::decrypt(&msg, &signaling_key, false)?;
     let content = cipher.open_envelope(envelope).await?.unwrap();
     println!("sealed message content decrypted");
-    let content_vec = match &content.body {
-        ContentBody::DataMessage(m) => content.body.into_proto().encode_to_vec(),
-        _ => {
-            println!("unexpected content body");
-            // TODO Please check whether the empty vector is intended
-            // Maybe you'd rather want to return an Err?
-            vec![]
-        }
-    };
+    let content_vec =content.body.into_proto().encode_to_vec();
     let message = base64::encode(&content_vec);
     Ok(DecryptSealedMessageResponse {
         message,
