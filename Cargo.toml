@@ -26,7 +26,7 @@ serde-big-array = { version="0.3.2", features = ["const-generics"] }
 serde_str = "0.1.0"
 serde_yaml = "0.8"
 tokio = { version= "1", features = ["full"] }
-uuid = { version = "0.7.4", features = [ "serde" ] }
+uuid = { version = "0.8", features = [ "serde" ] }
 warp = "0.3"
 
 hmac = "0.11.0"
