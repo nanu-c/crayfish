@@ -1,7 +1,7 @@
 [package]
 name = "crayfish"
 version = "0.2.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 libsignal-service = { git = "https://github.com/whisperfish/libsignal-service-rs.git", rev = "1508fa8f3561e3807aa8d073ca05a61346ae5a82" }
@@ -33,7 +33,6 @@ hmac = "0.11.0"
 sha2 = "0.9.0"
 pbkdf2 = { version = "0.8.0", default-features = false }
 sha-1 = "0.9.0"
-hashbrown  = "=0.11.2"
 [build-dependencies]
 cpp_build = "0.5"
 cc = "1.0"
