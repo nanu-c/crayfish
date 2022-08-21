@@ -17,7 +17,7 @@ pub async fn handle_message(msg: Message, queue: Queue) -> Result<Message> {
         .to_str()
         .map_err(|_| Error::new("Message is not text. Failed to parse."))?;
 
-    let type_check: RequestMessage<TypeCheck> = serde_json::from_str(content)?;
+    let type_check: RequestMessage<TypeCheck> = serde_json::from_str(content).map_err(report_serde_error)?;
 
     if type_check.direction != CRAYFISH_WEBSOCKET_TYPE_REQUEST {
         Error::is("Received Message is no valid request")?
@@ -46,7 +46,7 @@ async fn handle_registration(content: &str, queue: Queue) -> Result<Message> {
     println!("Handle registration message");
 
     let (tx, rx) = oneshot::channel();
-    let nested: NestedRequest<Register> = serde_json::from_str(content)?;
+    let nested: NestedRequest<Register> = serde_json::from_str(content).map_err(report_serde_error)?;
     let req = Request::Register(nested.request.message, tx);
 
     queue.send(req).await?;
@@ -70,7 +70,7 @@ async fn handle_registration_confirm(content: &str, queue: Queue) -> Result<Mess
     println!("Handle registration confirmation message");
 
     let (tx, rx) = oneshot::channel();
-    let nested: NestedRequest<ConfirmRegistration> = serde_json::from_str(content)?;
+    let nested: NestedRequest<ConfirmRegistration> = serde_json::from_str(content).map_err(report_serde_error)?;
     let req = Request::ConfirmRegistration(nested.request.message, tx);
 
     queue.send(req).await?;
@@ -84,14 +84,21 @@ async fn handle_registration_confirm(content: &str, queue: Queue) -> Result<Mess
         CRAYFISH_WEBSOCKET_MESSAGE_CONFIRM_REGISTRAION,
     ))
 }
+fn report_serde_error(e: serde_json::Error) -> Error {
+    println!("error: failed to parse json {}", e);
+    Error::new(&format!("{}", e))
+}
 
 async fn handle_sealed_sender_decrypt(content: &str, queue: Queue) -> Result<Message> {
-    println!("Handle sealed sender decrypt message");
+    println!("Handle sealed sender decrypt message cray");
 
     let (tx, rx) = oneshot::channel();
+    println!("1");
+    let nested: NestedRequest<sealedsender::SealedSenderMessage> = serde_json::from_str(content).map_err(report_serde_error)?;
+    println!("2");
 
-    let nested: NestedRequest<sealedsender::SealedSenderMessage> = serde_json::from_str(content)?;
     let req = Request::DecryptSealedSender(nested.request.message, tx);
+    println!("3");
     queue.send(req).await?;
     let response_data = rx.await??;
     Ok(NestedResponse::new_msg(

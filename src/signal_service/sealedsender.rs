@@ -19,7 +19,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Debug)]
 pub struct SealedSenderMessage {
     pub uuid: Option<Uuid>,
-    pub device_id: u32,
+    pub local_device_id: u32,
+    pub local_uuid: Option<Uuid>,
     #[serde(with = "serde_str")]
     pub message: String,
 }
@@ -46,8 +47,8 @@ pub async fn decrypt_sealed_message(
     let config = SignalConfig::default();
     let storage = open_storage(&config).await?;
     let signaling_key = storage.signaling_key().await?;
-    let uuid = data.uuid;
-    let device_id = data.device_id;
+    let uuid = data.local_uuid;
+    let device_id = data.local_device_id;
     println!("signaling_key loaded");
     let mut cipher = ServiceCipher::new(
         storage.clone(),
@@ -70,7 +71,7 @@ pub async fn decrypt_sealed_message(
     Ok(DecryptSealedMessageResponse {
         message,
         sender_device: content.metadata.sender_device,
-        timestamp: content.metadata.timestamp,
+        timestamp: content.metadata.timestamp, // todo server timestamp from envelope
         needs_receipt: content.metadata.needs_receipt,
         sender: content.metadata.sender,
     })

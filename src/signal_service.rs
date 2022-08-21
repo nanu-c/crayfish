@@ -40,6 +40,7 @@ impl SignalServiceWrapper {
                 let _ = cb.send(verify_user(data).await);
             }
             Request::DecryptSealedSender(data, cb) => {
+                print!("4" );
                 let _ = cb.send(decrypt_sealed_message(data).await);
             }
         }
