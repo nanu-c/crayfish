@@ -41,6 +41,7 @@ fn protobuf() -> Result<(), Error> {
 }
 
 fn main() {
+    std::env::set_var("PROTOC", protobuf_src::protoc());
     protobuf().unwrap();
     let output = Command::new("git")
         .args(&["rev-parse", "HEAD"])
