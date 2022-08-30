@@ -12,31 +12,11 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FO
 OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-use std::path::Path;
+use std::io::Result;
 use std::process::Command;
 
-use failure::*;
-
-fn protobuf() -> Result<(), Error> {
-    let protobuf = Path::new("protobuf").to_owned();
-
-    let input: Vec<_> = protobuf
-        .read_dir()
-        .expect("protobuf directory")
-        .filter_map(|entry| {
-            let entry = entry.expect("readable protobuf directory");
-            let path = entry.path();
-            if Some("proto") == path.extension().and_then(std::ffi::OsStr::to_str) {
-                assert!(path.is_file());
-                println!("cargo:rerun-if-changed={}", path.to_str().unwrap());
-                Some(path)
-            } else {
-                None
-            }
-        })
-        .collect();
-
-    prost_build::compile_protos(&input, &[protobuf])?;
+fn protobuf() -> Result<()> {
+    prost_build::compile_protos(&["protobuf/LocalStorageProtocol.proto"], &["protobuf/"])?;
     Ok(())
 }
 
