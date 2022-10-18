@@ -10,7 +10,6 @@ use libsignal_service::configuration::ServiceConfiguration;
 use libsignal_service::configuration::SignalServers;
 use libsignal_service::prelude::Envelope;
 use libsignal_service::ServiceAddress;
-use libsignal_service::content::ContentBody;
 use uuid::Uuid;
 
 // use protocol::envelope::*;
