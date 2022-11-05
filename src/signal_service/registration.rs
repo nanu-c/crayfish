@@ -26,6 +26,7 @@ pub struct ConfirmRegistration {
     #[serde(with = "serde_str")]
     pub number: PhoneNumber,
     pub password: String,
+    pub name: String,
     pub confirm_code: u32,
     #[serde(with = "BigArray")]
     pub signaling_key: [u8; 52],
@@ -59,15 +60,20 @@ pub async fn verify_user(data: ConfirmRegistration) -> Result<VerifyAccountRespo
             video: false,
             fetches_messages: true,
             pin: None,
+            name: data.name,
             registration_lock: None,
             unidentified_access_key: None,
             unrestricted_unidentified_access: false,
             discoverable_by_phone_number: true,
             capabilities: DeviceCapabilities {
-                uuid: true,
+                announcement_group: true,
                 gv2: true,
                 storage: false,
                 gv1_migration: true,
+                sender_key: true,
+                change_number: false,
+                gift_badges: false,
+                stories: false,
             },
         };
 

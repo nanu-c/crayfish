@@ -82,14 +82,14 @@ impl Storage {
             .join(format!("remote_{}", recipient_id))
     }
 
-    fn prekey_path(&self, id: u32) -> PathBuf {
+    fn prekey_path(&self, id: PreKeyId) -> PathBuf {
         self.path
             .join(".storage")
             .join("prekeys")
             .join(format!("{:09}", id))
     }
 
-    fn signed_prekey_path(&self, id: u32) -> PathBuf {
+    fn signed_prekey_path(&self, id: SignedPreKeyId) -> PathBuf {
         self.path
             .join(".storage")
             .join("signed_prekeys")
@@ -248,7 +248,7 @@ impl protocol::IdentityKeyStore for Storage {
 
 #[async_trait::async_trait(?Send)]
 impl protocol::PreKeyStore for Storage {
-    async fn get_pre_key(&self, id: u32, _: Context) -> Result<PreKeyRecord, SignalProtocolError> {
+    async fn get_pre_key(&self, id: PreKeyId, _: Context) -> Result<PreKeyRecord, SignalProtocolError> {
         println!("Loading prekey {}", id);
         let _lock = self.protocol_store.read().await;
 
@@ -264,7 +264,7 @@ impl protocol::PreKeyStore for Storage {
 
     async fn save_pre_key(
         &mut self,
-        id: u32,
+        id: PreKeyId,
         body: &PreKeyRecord,
         _: Context,
     ) -> Result<(), SignalProtocolError> {
@@ -279,7 +279,7 @@ impl protocol::PreKeyStore for Storage {
         Ok(())
     }
 
-    async fn remove_pre_key(&mut self, id: u32, _: Context) -> Result<(), SignalProtocolError> {
+    async fn remove_pre_key(&mut self, id: PreKeyId, _: Context) -> Result<(), SignalProtocolError> {
         println!("Removing prekey {}", id);
         let _lock = self.protocol_store.write().await;
 
@@ -292,7 +292,7 @@ impl protocol::PreKeyStore for Storage {
 impl Storage {
     // XXX Rewrite in terms of get_pre_key
     #[allow(dead_code)]
-    async fn contains_pre_key(&self, id: u32) -> bool {
+    async fn contains_pre_key(&self, id: PreKeyId) -> bool {
         println!("Checking for prekey {}", id);
         let _lock = self.protocol_store.read().await;
 
@@ -472,7 +472,7 @@ impl protocol::SessionStoreExt for Storage {
 impl protocol::SignedPreKeyStore for Storage {
     async fn get_signed_pre_key(
         &self,
-        id: u32,
+        id: SignedPreKeyId,
         _: Context,
     ) -> Result<SignedPreKeyRecord, SignalProtocolError> {
         println!("Loading signed prekey {}", id);
@@ -492,7 +492,7 @@ impl protocol::SignedPreKeyStore for Storage {
 
     async fn save_signed_pre_key(
         &mut self,
-        id: u32,
+        id: SignedPreKeyId,
         body: &SignedPreKeyRecord,
         _: Context,
     ) -> Result<(), SignalProtocolError> {
@@ -510,7 +510,7 @@ impl protocol::SignedPreKeyStore for Storage {
 
 impl Storage {
     #[allow(dead_code)]
-    async fn remove_signed_pre_key(&self, id: u32) -> Result<(), SignalProtocolError> {
+    async fn remove_signed_pre_key(&self, id: SignedPreKeyId) -> Result<(), SignalProtocolError> {
         println!("Removing signed prekey {}", id);
         let _lock = self.protocol_store.write().await;
 
@@ -521,7 +521,7 @@ impl Storage {
 
     // XXX rewrite in terms of get_signed_pre_key
     #[allow(dead_code)]
-    async fn contains_signed_pre_key(&self, id: u32) -> bool {
+    async fn contains_signed_pre_key(&self, id: SignedPreKeyId) -> bool {
         println!("Checking for signed prekey {}", id);
         let _lock = self.protocol_store.read().await;
 

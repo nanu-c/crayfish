@@ -10,7 +10,7 @@ use libsignal_service::configuration::ServiceConfiguration;
 use libsignal_service::configuration::SignalServers;
 use libsignal_service::prelude::Envelope;
 use libsignal_service::ServiceAddress;
-use uuid::Uuid;
+use libsignal_service::prelude::Uuid;
 
 // use protocol::envelope::*;
 use serde::{Deserialize, Serialize};
