@@ -63,17 +63,37 @@ pub async fn decrypt_sealed_message(
     // let msg = data.message.into_bytes();
     let msg = base64::decode(data.message).unwrap();
     let envelope = Envelope::decrypt(&msg, &signaling_key, false)?;
-    let content = cipher.open_envelope(envelope).await?.unwrap();
-    println!("sealed message content decrypted");
-    let content_vec =content.body.into_proto().encode_to_vec();
-    let message = base64::encode(&content_vec);
-    Ok(DecryptSealedMessageResponse {
-        message,
-        sender_device: content.metadata.sender_device,
-        timestamp: content.metadata.timestamp, // todo server timestamp from envelope
-        needs_receipt: content.metadata.needs_receipt,
-        sender: content.metadata.sender,
-    })
+    let content = cipher.open_envelope(envelope).await?;
+    match content {
+        Some(unwraped_content) =>{
+            println!("sealed message content decrypted");
+            let content_vec =unwraped_content.body.into_proto().encode_to_vec();
+            let message = base64::encode(&content_vec);
+            Ok(DecryptSealedMessageResponse {
+                message,
+                sender_device: unwraped_content.metadata.sender_device,
+                timestamp: unwraped_content.metadata.timestamp, // todo server timestamp from envelope
+                needs_receipt: unwraped_content.metadata.needs_receipt,
+                sender: unwraped_content.metadata.sender,
+            })  
+        },
+        None => {
+            println!("sealed message content not decrypted");
+            Ok(DecryptSealedMessageResponse {
+                message: "".to_string(),
+                sender_device: 0,
+                timestamp: 0,
+                needs_receipt: false,
+                sender: ServiceAddress{
+                    uuid: None,
+                    phonenumber: None,
+                    relay: None,
+
+                },
+            })  
+        }
+    }
+
 }
 
 async fn open_storage(config: &crate::config::SignalConfig) -> anyhow::Result<Storage> {
