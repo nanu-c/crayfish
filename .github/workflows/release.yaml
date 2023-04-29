@@ -1,0 +1,46 @@
+name: Release pipeline
+
+on:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: write
+
+jobs:
+  release-tarball:
+    name: Build release tarball
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get package name
+        run: |
+          echo "P=crayfish-${GITHUB_REF_NAME#v}" >> ${GITHUB_ENV}
+
+      - name: Setup rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Vendor dependencies
+        uses: actions-rs/cargo@v1
+        with:
+          command: vendor
+          args: --manifest-path Cargo.toml ${{ env.P }}/vendor
+
+      - name: Build release tarball
+        run: |
+          git archive --prefix="${P}/" -o ${P}.tar ${GITHUB_REF_NAME}
+          tar --append -f ${P}.tar ${P}
+          xz ${P}.tar
+
+      - name: Upload release tarball
+        uses: softprops/action-gh-release@v1
+        with:
+          files: crayfish-*.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
